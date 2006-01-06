@@ -1,5 +1,6 @@
 import db
-
+#returns the list of the form 
+#[({'identity':'dasdas','location':'0.31231'},{:,:}),...]
 def get():
 	data=[]
 	connections = list(db.NodePair.select())
