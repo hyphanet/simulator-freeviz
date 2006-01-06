@@ -17,12 +17,12 @@ def gentopology():
 	
 	for node in nodes:
 		gnode = pydot.Node(node.name,  label='''\
-<<table CELLBORDER="0" border="0"
+<<FONT POINT-SIZE="10px"><table CELLBORDER="0" border="0"
   CELLPADDING="0"
-  CELLSPACING="0"
-><tr><td>%s</td>
-</tr><tr><td>%s</td></tr>
-</table>>''' % (node.name,node.location) )
+  CELLSPACING="3"
+><tr><td align="left">%s</td>
+</tr><tr><td align="left">%s</td></tr>
+</table></FONT>>''' % (node.name,node.location[0:7]) )
 		g.add_node(gnode)
 	
 	#there are no dublicate edges in the database 
