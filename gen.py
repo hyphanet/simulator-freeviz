@@ -39,14 +39,21 @@ def gentopology():
 		if nversion < lastver:
 			nodecolor=nodeOUTDATED
 
+		
+
 		gnode = pydot.Node(node.name, style='filled', color=nodecolor , label='''\
-<<FONT POINT-SIZE="10px"><table CELLBORDER="0" border="0"
+<
+<table CELLBORDER="0" border="0"
   CELLPADDING="2"
-  CELLSPACING="3"
-><tr><td align="left">%s</td>
-</tr><tr><td align="left">%s</td></tr>
-<tr><td align="left">Ver. %s</td></tr>
-</table></FONT>>''' % (node.name,node.location[0:7],nversion ))
+  CELLSPACING="3">
+<tr><td align="left"><FONT point-size="10px">%s</FONT></td>
+</tr>
+<tr><td align="left"><FONT point-size="10px">%s</FONT></td></tr>
+<tr><td align="left"><FONT point-size="8px">R:%s I:%s TR:%s</FONT></td></tr>
+<tr><td align="left"><FONT point-size="5px">Ver. %s</FONT></td></tr>
+
+</table>
+>''' % (node.name,node.location[0:7], node.requests, node.inserts, node.transferring_requests,nversion))
 		g.add_node(gnode)
 	
 	#there are no dublicate edges in the database 
