@@ -1,7 +1,7 @@
 from sqlobject import *
 from sqlobject.sqlbuilder import *
 import sys,os
-from datetime import *
+import datetime
 #mport pydot
 
 
@@ -21,7 +21,7 @@ class NodePair(SQLObject):
 
 class Node(SQLObject):
 	identity = StringCol(length=100, notNull=True)
-	lastUpdate = DateTimeCol(notNull=True, default=datetime.now())
+	lastUpdate = DateTimeCol(notNull=True, default=datetime.datetime.now())
 	name = StringCol(length=50, notNull=True, default='dummy')
 	version = StringCol(length=50, notNull=True, default='0')
 
@@ -77,7 +77,7 @@ def refresh(nodeinfo):
 	for key in nodeinfo.keys():
 		setattr(n, key, nodeinfo[key])
 
-	n.lastUpdate = datetime.now()
+	n.lastUpdate = datetime.datetime.now()
 
 
 def getIdFromInfo(nodeinfo):
