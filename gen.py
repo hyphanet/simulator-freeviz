@@ -110,7 +110,7 @@ class Generator(object):
 		if not nstate:
 			print "got empty nstate list"
 
-		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s' % (nnum, enum) , size='9.0,10.0')
+		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s' % (nnum, enum)  )
 		lastver = self.regver.match( db.getLastVer()).group(1)
 	
 		
@@ -159,7 +159,7 @@ class Generator(object):
 	
 			if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 				edgecolor= self.edgeBLOCKED
-			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor,
+			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor, 
 							label='d: %0.3f' % distance, fontsize='9.5',arrowhead='none')
 			#node1 is tail, node2 is head
 			if edgecolor == self.edgeBLOCKED:
@@ -184,6 +184,7 @@ class Generator(object):
 			print "oldnstate empty!"
 	
 		g.write_png('/tmp/output.png',prog='dot')
+
 	
 		self.oldnstate = nstate
 	#	g.write_dot('bla.dot')
@@ -199,22 +200,11 @@ class Generator(object):
 	#	</body>
 	#	</html>
 	#	"""
-
 oldnstate={}
-while(True):
-	generator = Generator(oldnstate)
-	generator.gentopology()
-	histogram.gen()
-	oldnstate = generator.oldnstate
-	del generator
-	del histogram
-	
-	del handler
-	del db
-	time.sleep(100)
-	print "iter"
 
-	import histogram
-	import db
-	import handler
-
+#while(True):
+generator = Generator(oldnstate)
+generator.gentopology()
+histogram.gen()
+oldnstate = generator.oldnstate
+#time.sleep(60)
