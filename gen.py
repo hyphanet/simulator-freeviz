@@ -49,14 +49,16 @@ def gentopology():
 <table CELLBORDER="0" border="0"
   CELLPADDING="2"
   CELLSPACING="3">
-<tr><td align="left"><FONT point-size="10px">%s</FONT></td>
+<tr><td align="left"><FONT point-size="%s">%s</FONT></td>
 </tr>
-<tr><td align="left"><FONT point-size="10px">%s</FONT></td></tr>
+<tr><td align="left"><FONT point-size="%s">%s</FONT></td></tr>
 <tr><td align="left"><FONT point-size="%s">R:%s I:%s TR:%s</FONT></td></tr>
 <tr><td align="left"><FONT point-size="5px">Ver. %s</FONT></td></tr>
 
 </table>
->''' % (node.name,node.location[0:7], transinfosize, node.requests, node.inserts, node.transferring_requests,nversion))
+>''' % (transinfosize, node.name,transinfosize, 
+	node.location[0:7], transinfosize, node.requests, 
+	node.inserts, node.transferring_requests,nversion))
 		g.add_node(gnode)
 	
 	#there are no dublicate edges in the database 
