@@ -8,11 +8,11 @@ def get():
 
 
 	nodes = list(handler.get_activenodes())
-	lastver = db.getLastVer()
+	lastgoodver = db.getLastGoodVer()
 
 	goodnodes=[]
 	for node in nodes:
-		if node.version >= lastver:
+		if node.lastGoodVersion >= lastgoodver:
 			goodnodes.append(node.id)
 		else:
 			print("%s is bad!" % node.name)

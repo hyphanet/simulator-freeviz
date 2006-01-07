@@ -19,6 +19,8 @@ def gen():
 	for x in range(0,precision):
 		 histogram.append(0)
 	number_of_connections=len(links)
+	if number_of_connections == 0:
+		return
 	
 	#print "They are "+str(number_of_connections)+" connections."
 	

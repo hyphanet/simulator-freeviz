@@ -5,7 +5,7 @@ import datetime
 #mport pydot
 
 
-uri = 'mysql://twisted:severe@127.0.0.1/twisted?cache=False'
+uri = 'mysql://twisted:severe@127.0.0.1/twisted?debug=True'
 con = connectionForURI(uri)
 sqlhub.processConnection = con
 
@@ -24,6 +24,7 @@ class Node(SQLObject):
 	lastUpdate = DateTimeCol(notNull=True, default=datetime.datetime.now())
 	name = StringCol(length=50, notNull=True, default='dummy')
 	version = StringCol(length=50, notNull=True, default='0')
+	lastGoodVersion = StringCol(length=50, notNull=True, default='0')
 
 	location = StringCol(length=50, notNull=True,default='0')
 	testnet = StringCol(length=10, notNull=True, default='true')
@@ -36,8 +37,8 @@ class Node(SQLObject):
 	index = DatabaseIndex('identity',unique=True)
 	#index2 = DatabaseIndex('name',unique=True)
 
-def getLastVer():
-	return con.queryOne('SELECT MAX(version) from node')[0]
+def getLastGoodVer():
+	return con.queryOne('SELECT MAX(last_good_version) from node')[0]
 
 def init():
 	Node.createTable()

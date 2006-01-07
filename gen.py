@@ -112,7 +112,7 @@ class Generator(object):
 			print "got empty nstate list"
 
 		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s' % (nnum, enum)  )
-		lastver = self.regver.match( db.getLastVer()).group(1)
+		lastgoodver = db.getLastGoodVer()
 	
 		#counts edges for a node	
 		edge_count={}
@@ -122,14 +122,9 @@ class Generator(object):
 			nodecolor=self.nodeOK
 			transinfosize=self.defaultSize
 	
-			matc = self.regver.match(node.version)
-			if matc:
-				nversion = matc.group(1)
-			else:
-				nversion = '0'
-	
-			
-			if nversion < lastver:
+
+			nversion = self.regver.match(node.version).group(1)
+			if node.lastGoodVersion < lastgoodver:
 				nodecolor=self.nodeOUTDATED
 	
 			if node.requests != '0' or node.inserts != '0' or node.transferring_requests != '0':
@@ -223,4 +218,4 @@ generator = Generator(oldnstate)
 generator.gentopology()
 histogram.gen()
 oldnstate = generator.oldnstate
-#time.sleep(60)
+#time.sleep(10)
