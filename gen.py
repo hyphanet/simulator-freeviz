@@ -5,6 +5,7 @@ import pydot
 import sys
 import re
 import handler
+import math
 
 sys.path+=['/home/sleon/public_html/bla/']
 from db import *
@@ -66,10 +67,14 @@ def gentopology():
 	for node_pair in node_pairs:
 		edgecolor = edgeOK
 
+		node1loc = node_pair.node1.location
+		node2loc = node_pair.node2.location
+		distance = str( int ( math.floor( abs ( float(node1loc) - float(node2loc) * 10.0) )) )
 
 		if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 			edgecolor= edgeBLOCKED
-		gedge = pydot.Edge(node_pair.node1.name ,node_pair.node2.name,  color=edgecolor , arrowhead='none')
+		gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor,
+						label='d: %s' % distance, fontsize='9.5',arrowhead='none')
 		#node1 is tail, node2 is head
 		if edgecolor == edgeBLOCKED:
 			if node_pair.backoffcur_node1 != '0':
