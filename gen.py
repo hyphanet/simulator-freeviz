@@ -12,6 +12,7 @@ import histogram
 
 import db
 import sqlobject
+from datetime import *
 
 	
 
@@ -111,7 +112,7 @@ class Generator(object):
 		if not nstate:
 			print "got empty nstate list"
 
-		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s' % (nnum, enum)  )
+		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s, Time: %s' % (nnum, enum, datetime.now())  )
 		lastgoodver = db.getLastGoodVer()
 	
 		#counts edges for a node	
