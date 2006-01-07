@@ -23,7 +23,7 @@ class Generator(object):
 	regver = re.compile('.*,(\d+)')
 	#COLORS
 	nodeOK='#9dfbb9'
-	nodeOUTDATED='#66f1eb'
+	nodeOUTDATED='#c5ffff'
 	nodeLCONNS='#f9ffcb'
 
 	edgeOK='#238500'
