@@ -15,6 +15,7 @@ nodeOK='#9dfbb9'
 nodeOUTDATED='#f3fb9d'
 edgeOK='#238500'
 edgeBLOCKED='#ee4a1e'
+defaultSize='8px'
 
 
 def gentopology():
@@ -28,6 +29,7 @@ def gentopology():
 	for node in nodes:
 
 		nodecolor=nodeOK
+		transinfosize=defaultSize
 
 		matc = regver.match(node.version)
 		if matc:
@@ -39,7 +41,8 @@ def gentopology():
 		if nversion < lastver:
 			nodecolor=nodeOUTDATED
 
-		
+		if node.requests != '0' or node.inserts != '0' or node.transferring_requests != '0':
+			transinfosize="10px"
 
 		gnode = pydot.Node(node.name, style='filled', color=nodecolor , label='''\
 <
@@ -49,11 +52,11 @@ def gentopology():
 <tr><td align="left"><FONT point-size="10px">%s</FONT></td>
 </tr>
 <tr><td align="left"><FONT point-size="10px">%s</FONT></td></tr>
-<tr><td align="left"><FONT point-size="8px">R:%s I:%s TR:%s</FONT></td></tr>
+<tr><td align="left"><FONT point-size="%s">R:%s I:%s TR:%s</FONT></td></tr>
 <tr><td align="left"><FONT point-size="5px">Ver. %s</FONT></td></tr>
 
 </table>
->''' % (node.name,node.location[0:7], node.requests, node.inserts, node.transferring_requests,nversion))
+>''' % (node.name,node.location[0:7], transinfosize, node.requests, node.inserts, node.transferring_requests,nversion))
 		g.add_node(gnode)
 	
 	#there are no dublicate edges in the database 
