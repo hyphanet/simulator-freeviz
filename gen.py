@@ -69,7 +69,7 @@ def gentopology():
 
 		node1loc = node_pair.node1.location
 		node2loc = node_pair.node2.location
-		distance = str( int ( math.floor( abs ( float(node1loc) - float(node2loc) * 10.0) )) )
+		distance = str( int ( math.floor( abs ( (( float(node1loc) - float(node2loc)) * 10.0)) )) )
 
 		if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 			edgecolor= edgeBLOCKED
