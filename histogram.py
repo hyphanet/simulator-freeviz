@@ -3,11 +3,14 @@
 try:
 	import gdchart
 	from math import floor
+	import sys
+	sys.path+=['/home/sleon/public_html/bla/']
+
 	import histdata
 	
 	links = histdata.get()
 except:
-	print "Blame sleon if his api is b0rk3d! :p"
+	print "Blame sleon if his api is b0rk3d! :p(comment from sleon: why me why me?\nblame nextgens for missing libs!"
 	quit
 
 histogram=[0,0,0,0,0,0,0,0,0,0]
@@ -31,6 +34,6 @@ x.title = "Histogram of link location distances"
 x.ext_color = [ 0x055202 , 0x169310 , 0x298760 , 0x297987 , 0xc1d72b , 0xd4f113 , 0xf18113 , 0xf13713 , 0xcf0000 , 0x000000 ]
 x.setData(histogram_percents)
 x.setLabels(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"])
-x.draw("histogram.png")
+x.draw("/tmp/histogram.png")
 print histogram
 print histogram_percents
