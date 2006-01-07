@@ -49,13 +49,14 @@ class Generator(object):
                 #a number between 0 and 0.5
                 delta = min(abs(a-b), 1-abs(a-b))
 
-                index=0
-                chunk=0.5 / float(histogram.precision)
-                for i in range(histogram.precision):
-                        if chunk * float(i) <= delta and chunk * float(i+1) > delta:
-                                index = i
-                                break
-		return index
+		return delta
+                #index=0
+                #chunk=0.5 / float(histogram.precision)
+                #for i in range(histogram.precision):
+                #        if chunk * float(i) <= delta and chunk * float(i+1) > delta:
+                #                index = i
+                #                break
+		#return index * chunk
 	
 	def find_and_addswapedge(self, g, nodes, identity, nstate):
 		
@@ -81,8 +82,12 @@ class Generator(object):
 	def gentopology(self):
 		#NodePair.createTable( ifNotExists=True )
 		node_pairs = list(db.NodePair.select())
-		nodes = handler.get_activenodes()
+		assert node_pairs
+		nodes = list( handler.get_activenodes())
+		assert nodes
 		nstate = self.getnstate(nodes)
+		assert nstate
+
 		g=pydot.Dot(type='digraph')
 		lastver = self.regver.match( db.getLastVer()).group(1)
 	
@@ -133,7 +138,7 @@ class Generator(object):
 			if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 				edgecolor= self.edgeBLOCKED
 			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor,
-							label='d: %d' % distance, fontsize='9.5',arrowhead='none')
+							label='d: %f' % distance, fontsize='9.5',arrowhead='none')
 			#node1 is tail, node2 is head
 			if edgecolor == self.edgeBLOCKED:
 				if node_pair.backoffcur_node1 != '0':

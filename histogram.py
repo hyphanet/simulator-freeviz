@@ -13,6 +13,7 @@ import histdata
 
 def gen():
 	links = histdata.get()
+	chunk=0.5 / float(precision)
 
 	histogram=[]
 	for x in range(0,precision):
@@ -28,7 +29,6 @@ def gen():
 		delta = min(abs(a-b), 1-abs(a-b))
 		
 		index=0
-		chunk=0.5 / float(precision)
 		for i in range(precision):
 			if chunk * float(i) <= delta and chunk * float(i+1) > delta:
 				index = i
@@ -44,11 +44,12 @@ def gen():
 	x.xtitle = "Distance"
 	x.ytitle = "%"
 	x.title = "Histogram of link location distances"
-	x.ext_color = [ 0x055202 , 0x169310 , 0x298760 , 0x297987 , 0xc1d72b , 0xd4f113 , 0xf18113 , 0xf13713 , 0xcf0000 , 0x000000 ]
+	x.ext_color = [ 0x055202 , 0x169310 , 0x298760 , 0x297987 , 0xc1d72b , 0xd4f113 , 0xf18113 , 0xf13713 , 0xcf0000 , 0x700606 ]
 	x.setData(histogram_percents)
 	label=[]
-	for column_name in range(0,precision):
-		 label.append(str(column_name))
+	for i in range(0,precision):
+		column_name = str(chunk * i)
+		label.append(column_name)
 	x.setLabels(label)
 	x.draw("/tmp/histogram.png")
 	#print histogram

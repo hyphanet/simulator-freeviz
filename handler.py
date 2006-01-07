@@ -44,7 +44,8 @@ def inactive(node):
 
 
 def get_activenodes():
-	nodes = db.Node.select()
+	nodes = list(db.Node.select())
+	assert nodes
 	active_nodes=[]
 
 	for node in nodes:
