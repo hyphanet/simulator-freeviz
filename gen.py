@@ -4,6 +4,7 @@ import sys,os
 import pydot
 import sys
 import re
+import handler
 
 sys.path+=['/home/sleon/public_html/bla/']
 from db import *
@@ -21,7 +22,7 @@ defaultSize='8px'
 def gentopology():
 	#NodePair.createTable( ifNotExists=True )
 	node_pairs = list(NodePair.select())
-	nodes = list(Node.select())
+	nodes = handler.get_activenodes()
 	g=pydot.Dot(type='digraph')
 	lastver = regver.match( getLastVer()).group(1)
 

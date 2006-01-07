@@ -36,10 +36,25 @@ def check_nodes():
 	nodes = db.Node.select()
 
 	for node in nodes:
-		nodetime = node.lastUpdate
-		if (curtime() - convtime(nodetime) ) > timedelta:
+		if inactive(node):
 			nodeinfo = getInfoFromNode(node)
 			db.delete_conns(nodeinfo)
+
+
+def inactive(node):
+	nodetime = node.lastUpdate
+	return (curtime() - convtime(nodetime) ) > timedelta
+
+
+def get_activenodes():
+	nodes = db.Node.select()
+	active_nodes=[]
+
+	for node in nodes:
+		if not inactive(node):
+			active_nodes.append(node)
+
+	return active_nodes
 
 #time in seconds since epoch
 def curtime():
