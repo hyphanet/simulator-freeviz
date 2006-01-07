@@ -36,6 +36,8 @@ class Node(SQLObject):
 	index = DatabaseIndex('identity',unique=True)
 	#index2 = DatabaseIndex('name',unique=True)
 
+def getLastVer():
+	return con.queryOne('SELECT MAX(version) from node')[0]
 
 def init():
 	Node.createTable()
