@@ -22,8 +22,18 @@ def gen():
 	#print "They are "+str(number_of_connections)+" connections."
 	
 	for connection in links:
-		delta=float(connection[0].get("location"))-float(connection[1].get("location"))
-		index=int(floor(abs(delta*precision)))
+		a = float(connection[0].get("location"))
+		b = float(connection[1].get("location"))
+		#a number between 0 and 0.5
+		delta = min(abs(a-b), 1-abs(a-b))
+		
+		index=0
+		chunk=0.5 / float(precision)
+		for i in range(precision):
+			if chunk * float(i) <= delta and chunk * float(i+1) > delta:
+				index = i
+				break
+			
 		histogram[index]=histogram[index]+1
 	
 	histogram_percents=[ (x*100)/number_of_connections for x in histogram ]

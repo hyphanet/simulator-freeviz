@@ -31,6 +31,8 @@ class Generator(object):
 	#saves previous state of nodes
 	oldnstate={}
 
+	def __init__(self,oldnstate):
+		self.oldnstate = oldnstate
 	
 	#returns identyt location dictionaries list for all ndoes
 	def getnstate(self,nodes):
@@ -40,6 +42,20 @@ class Generator(object):
 			nstate[node.identity] = (node.location, node.name)
 	
 		return nstate
+
+	def compute_distance(self, loc1, loc2):
+                a = loc1
+		b = loc2
+                #a number between 0 and 0.5
+                delta = min(abs(a-b), 1-abs(a-b))
+
+                index=0
+                chunk=0.5 / float(histogram.precision)
+                for i in range(histogram.precision):
+                        if chunk * float(i) <= delta and chunk * float(i+1) > delta:
+                                index = i
+                                break
+		return index
 	
 	def find_and_addswapedge(self, g, nodes, identity, nstate):
 		
@@ -110,14 +126,14 @@ class Generator(object):
 		for node_pair in node_pairs:
 			edgecolor = self.edgeOK
 	
-			node1loc = node_pair.node1.location
-			node2loc = node_pair.node2.location
-			distance = str( int ( math.floor( abs ( (( float(node1loc) - float(node2loc)) * 10.0)) )) )
+			node1loc = float(node_pair.node1.location)
+			node2loc = float(node_pair.node2.location)
+			distance = self.compute_distance(node1loc, node2loc)
 	
 			if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 				edgecolor= self.edgeBLOCKED
 			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor,
-							label='d: %s' % distance, fontsize='9.5',arrowhead='none')
+							label='d: %d' % distance, fontsize='9.5',arrowhead='none')
 			#node1 is tail, node2 is head
 			if edgecolor == self.edgeBLOCKED:
 				if node_pair.backoffcur_node1 != '0':
@@ -157,10 +173,19 @@ class Generator(object):
 	#	</html>
 	#	"""
 
-generator = Generator()
+oldnstate={}
 while(True):
+	generator = Generator(oldnstate)
 	generator.gentopology()
 	histogram.gen()
+	oldnstate = generator.oldnstate
+	del generator
+	del histogram
+	
+	del db
 	time.sleep(100)
 	print "iter"
+
+	import histogram
+	import db
 
