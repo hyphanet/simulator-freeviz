@@ -10,10 +10,7 @@ def handle(data):
 	if 'identity' in nodeinfo:
 		db.refresh(nodeinfo)
 		db.delete_conns(nodeinfo)
-		if not nodeinfos:
-			db.insert(nodeinfo,nodeinfo)
-		else:
-
+		if nodeinfos:
 			for nodeinfo2 in nodeinfos:
 				db.refresh(nodeinfo2)
 
