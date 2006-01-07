@@ -26,7 +26,7 @@ class Generator(object):
 	nodeOUTDATED='#f3fb9d'
 	edgeOK='#238500'
 	edgeBLOCKED='#ee4a1e'
-	defaultSize='8px'
+	defaultSize='3px'
 	
 	#saves previous state of nodes
 	oldnstate={}
@@ -58,6 +58,18 @@ class Generator(object):
                 #                break
 		#return index * chunk
 	
+	def get_activenodes(self):
+        	nodes = list(db.Node.select())
+		if not nodes:
+	        	print 'got empty nodes'
+        	active_nodes=[]
+
+	        for node in nodes:
+        	        if not handler.inactive(node):
+                	        active_nodes.append(node)
+
+	        return active_nodes
+
 	def find_and_addswapedge(self, g, nodes, identity, nstate):
 		
 		oldidentities=[]
@@ -82,13 +94,23 @@ class Generator(object):
 	def gentopology(self):
 		#NodePair.createTable( ifNotExists=True )
 		node_pairs = list(db.NodePair.select())
-		assert node_pairs
-		nodes = list( handler.get_activenodes())
-		assert nodes
-		nstate = self.getnstate(nodes)
-		assert nstate
+		if not node_pairs:
+			print "node_pairs is empty"
+		nodes = list( self.get_activenodes())
+		while not nodes:
+			print "got empty active nodes list!"
+			time.sleep(1)
+			nodes = list( self.get_activenodes())
 
-		g=pydot.Dot(type='digraph')
+		#number of edges and nodes in grapgh
+		nnum=len(nodes)
+		enum=len(node_pairs)
+
+		nstate = self.getnstate(nodes)
+		if not nstate:
+			print "got empty nstate list"
+
+		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s' % (nnum, enum) , size='9.0,10.0')
 		lastver = self.regver.match( db.getLastVer()).group(1)
 	
 		
@@ -138,7 +160,7 @@ class Generator(object):
 			if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 				edgecolor= self.edgeBLOCKED
 			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor,
-							label='d: %f' % distance, fontsize='9.5',arrowhead='none')
+							label='d: %0.3f' % distance, fontsize='9.5',arrowhead='none')
 			#node1 is tail, node2 is head
 			if edgecolor == self.edgeBLOCKED:
 				if node_pair.backoffcur_node1 != '0':
@@ -187,10 +209,12 @@ while(True):
 	del generator
 	del histogram
 	
+	del handler
 	del db
 	time.sleep(100)
 	print "iter"
 
 	import histogram
 	import db
+	import handler
 
