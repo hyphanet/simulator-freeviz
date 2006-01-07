@@ -39,7 +39,7 @@ def gentopology():
 		if nversion < lastver:
 			nodecolor=nodeOUTDATED
 
-		gnode = pydot.Node(node.name,  shape='plaintext', label='''\
+		gnode = pydot.Node(node.name, shape='plaintext', label='''\
 <<FONT POINT-SIZE="10px"><table bgcolor="%s" CELLBORDER="0" border="1"
   CELLPADDING="2"
   CELLSPACING="3"
@@ -60,7 +60,7 @@ def gentopology():
 		g.add_edge(gedge)
 
 
-	g.write_png('/home/sleon/public_html/output2.png',prog='dot')
+	g.write_png('/tmp/output.png',prog='dot')
 #	g.write_dot('bla.dot')
 
 #	return """\
