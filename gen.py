@@ -23,10 +23,13 @@ class Generator(object):
 	regver = re.compile('.*,(\d+)')
 	#COLORS
 	nodeOK='#9dfbb9'
-	nodeOUTDATED='#f3fb9d'
+	nodeOUTDATED='#66f1eb'
+	nodeLCONNS='#f9ffcb'
+
 	edgeOK='#238500'
 	edgeBLOCKED='#ee4a1e'
 	defaultSize='3px'
+	minEdges=3
 	
 	#saves previous state of nodes
 	oldnstate={}
@@ -89,8 +92,6 @@ class Generator(object):
 	
 		g.add_ege(gedge)
 	
-		
-	
 	def gentopology(self):
 		#NodePair.createTable( ifNotExists=True )
 		node_pairs = list(db.NodePair.select())
@@ -113,7 +114,9 @@ class Generator(object):
 		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s' % (nnum, enum)  )
 		lastver = self.regver.match( db.getLastVer()).group(1)
 	
-		
+		#counts edges for a node	
+		edge_count={}
+	
 		for node in nodes:
 	
 			nodecolor=self.nodeOK
@@ -147,8 +150,14 @@ class Generator(object):
 	>''' % (transinfosize, node.name,transinfosize, 
 		node.location[0:7], transinfosize, node.requests, 
 		node.inserts, node.transferring_requests,nversion))
+
+			edge_count[gnode.name]=0
 			g.add_node(gnode)
 		
+
+
+
+
 		#there are no dublicate edges in the database 
 		for node_pair in node_pairs:
 			edgecolor = self.edgeOK
@@ -170,9 +179,16 @@ class Generator(object):
 					gedge.headlabel='%s (%s)' % (node_pair.backoffmax_node2, node_pair.backoffcur_node2 ) 
 					gedge.arrowhead='tee'
 	
-	
+			edge_count[gedge.get_source()]+=1
+			edge_count[gedge.get_destination()]+=1
 			g.add_edge(gedge)
 	
+
+		for node_name in edge_count.keys():
+			if edge_count[node_name] < self.minEdges:
+				if g.get_node(node_name).color != self.nodeOUTDATED:
+					g.get_node(node_name).color=self.nodeLCONNS
+
 			
 		if self.oldnstate:
 			for identity in nstate.keys():
