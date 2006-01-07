@@ -68,9 +68,19 @@ def gentopology():
 
 		if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 			edgecolor= edgeBLOCKED
-		gedge = pydot.Edge(node_pair.node1.name, node_pair.node2.name, color=edgecolor , arrowhead='none')
-		g.add_edge(gedge)
+		gedge = pydot.Edge(node_pair.node1.name ,node_pair.node2.name,  color=edgecolor , arrowhead='none')
+		#node1 is tail, node2 is head
+		if edgecolor == edgeBLOCKED:
+			if node_pair.backoffcur_node1 != '0':
+				gedge.taillabel='%s (%s)' % (node_pair.backoffmax_node1, node_pair.backoffcur_node1 ) 
+				gedge.arrowtail='tee'
+			if node_pair.backoffcur_node2 != '0':
+				gedge.headlabel='%s (%s)' % (node_pair.backoffmax_node2, node_pair.backoffcur_node2 ) 
+				gedge.arrowhead='tee'
 
+
+		g.add_edge(gedge)
+			
 
 	g.write_png('/tmp/output.png',prog='dot')
 #	g.write_dot('bla.dot')
