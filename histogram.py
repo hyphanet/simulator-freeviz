@@ -11,8 +11,8 @@ import histdata
 	
 
 
-def gen():
-	links = histdata.get()
+def gen(trans):
+	links = histdata.get(trans)
 	chunk=0.5 / float(precision)
 
 	histogram=[]

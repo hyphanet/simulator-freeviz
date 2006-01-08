@@ -7,11 +7,10 @@ sys.path+=['/home/sleon/freeviz/']
 import re
 import handler
 import math
-import time
+from time import sleep
 import histogram
 
 import db
-import sqlobject
 from datetime import *
 
 	
@@ -62,47 +61,35 @@ class Generator(object):
                 #                break
 		#return index * chunk
 	
-	def get_activenodes(self):
-        	nodes = list(db.Node.select())
-		if not nodes:
-	        	print 'got empty nodes'
-        	active_nodes=[]
-
-	        for node in nodes:
-        	        if not handler.inactive(node):
-                	        active_nodes.append(node)
-
-	        return active_nodes
-
 	def find_and_addswapedge(self, g, nodes, identity, nstate):
 		
 		oldidentities=[]
 		
 		for okey in self.oldnstate.keys():
-			if oldstate[okey][0] == oldlocation:
+			if oldnstate[okey][0] == nstate[identity][0]:
 				oldidentities.append(okey)
 	
 		#not eindeutig!!
 		if len(oldidentities) != 1 :
 			print("name not eindeutig!")	
+			return
 	
 		oldidentity = oldidentities[0]
 		print "showing edge between %s and %s" % ( nstate[identity][1], nstate[oldidentity][1])
-		gedge=pydot.Gedge(nstate[identity][1], nstate[oldidentity][1], label='swap', taillabel='nstate[identity][0]'
-					, headlabel='nstate[oldidentity][0]', arrowtail='vee', arrowhead='vee'  )
+		gedge=pydot.Edge(nstate[identity][1], nstate[oldidentity][1], label='swap', 
+					taillabel='%s' % nstate[identity][0],
+					headlabel='%s' %nstate[oldidentity][0], arrowtail='vee', arrowhead='vee'  )
 	
-		g.add_ege(gedge)
+		g.add_edge(gedge)
 	
-	def gentopology(self):
+	def gentopology(self,trans):
 		#NodePair.createTable( ifNotExists=True )
-		node_pairs = list(db.NodePair.select())
+		node_pairs = list(db.NodePair.select(connection=trans))
 		if not node_pairs:
 			print "node_pairs is empty"
-		nodes = list( self.get_activenodes())
-		while not nodes:
+		nodes = list( handler.get_activenodes(trans))
+		if not nodes:
 			print "got empty active nodes list!"
-			time.sleep(1)
-			nodes = list( self.get_activenodes())
 
 		#number of edges and nodes in grapgh
 		nnum=len(nodes)
@@ -113,7 +100,7 @@ class Generator(object):
 			print "got empty nstate list"
 
 		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s, Time: %s' % (nnum, enum, datetime.now())  )
-		lastgoodver = db.getLastGoodVer()
+		lastgoodver = db.getLastGoodVer(trans)
 	
 		#counts edges for a node	
 		edge_count={}
@@ -190,7 +177,7 @@ class Generator(object):
 			for identity in nstate.keys():
 				if identity in self.oldnstate:
 					if self.oldnstate[identity] != nstate[identity]:
-						print('location swap detected')
+						print('\nlocation swap detected!!!!!!!!!!!!!!!!!!!!!!\n')
 						self.find_and_addswapedge(g, nodes, identity, nstate) 
 		else:
 			print "oldnstate empty!"
@@ -213,10 +200,21 @@ class Generator(object):
 	#	</html>
 	#	"""
 oldnstate={}
+if len(sys.argv) > 1:
+	delay=int(sys.argv[1])
+else:
+	delay=60
 
-#while(True):
-generator = Generator(oldnstate)
-generator.gentopology()
-histogram.gen()
-oldnstate = generator.oldnstate
-#time.sleep(10)
+print "delay is %d" % delay
+
+while(True):
+	generator = Generator(oldnstate)
+	#STARING TRANS
+	trans=db.get_trans()
+	generator.gentopology(trans)
+	histogram.gen(trans)
+	#COMMITING TRANS
+	trans.commit()
+	del trans
+	oldnstate = generator.oldnstate
+	sleep(delay)

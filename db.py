@@ -5,11 +5,13 @@ import datetime
 #mport pydot
 
 
-uri = 'mysql://twisted:severe@127.0.0.1/twisted?debug=True'
+uri = 'mysql://twisted:severe@127.0.0.1/twisted?cache=False'
 con = connectionForURI(uri)
 sqlhub.processConnection = con
 
+
 class NodePair(SQLObject):
+	_cacheValue = False
         node1 = ForeignKey('Node', notNull=True)
         node2 = ForeignKey('Node', notNull=True)
 
@@ -20,6 +22,7 @@ class NodePair(SQLObject):
         index = DatabaseIndex('node1','node2', unique=True)
 
 class Node(SQLObject):
+	_cacheValue = False
 	identity = StringCol(length=100, notNull=True)
 	lastUpdate = DateTimeCol(notNull=True, default=datetime.datetime.now())
 	name = StringCol(length=50, notNull=True, default='dummy')
@@ -37,9 +40,6 @@ class Node(SQLObject):
 	index = DatabaseIndex('identity',unique=True)
 	#index2 = DatabaseIndex('name',unique=True)
 
-def getLastGoodVer():
-	return con.queryOne('SELECT MAX(last_good_version) from node')[0]
-
 def init():
 	Node.createTable()
 	NodePair.createTable()
@@ -52,15 +52,22 @@ def reinit():
 	drop()
 	init()
 
-def delete_conns(nodeinfo):
-	nodeid = getIdFromInfo(nodeinfo)
-	l = NodePair.select()
+def get_trans():
+	return con.transaction()
+
+def getLastGoodVer(trans):
+	return trans.queryOne('SELECT MAX(last_good_version) from node')[0]
+
+
+def delete_conns(nodeinfo, trans):
+	nodeid = getIdFromInfo(nodeinfo,trans)
+	l = NodePair.select(connection=trans)
 	for i in l:
 		if i.node1.id == nodeid or i.node2.id == nodeid:
 			i.delete(i.id)
 
-def exists(nodeinfo):
-	result = Node.select(Node.q.identity == nodeinfo['identity'])
+def exists(nodeinfo,trans):
+	result = Node.select(Node.q.identity == nodeinfo['identity'],connection=trans)
 
 	if list(result):
 		return True
@@ -68,12 +75,12 @@ def exists(nodeinfo):
 		return False
 
 
-def refresh(nodeinfo):
-	if exists(nodeinfo):
-		n = Node.select(Node.q.identity == nodeinfo['identity'])[0]
+def refresh(nodeinfo,trans):
+	if exists(nodeinfo,trans):
+		n = Node.select(Node.q.identity == nodeinfo['identity'],connection=trans)[0]
 
 	else:
-		n = Node(identity=nodeinfo['identity'])
+		n = Node(identity=nodeinfo['identity'],connection=trans)
 	
 	for key in nodeinfo.keys():
 		setattr(n, key, nodeinfo[key])
@@ -81,18 +88,18 @@ def refresh(nodeinfo):
 	n.lastUpdate = datetime.datetime.now()
 
 
-def getIdFromInfo(nodeinfo):
-	n = Node.select(Node.q.identity == nodeinfo['identity'] )
+def getIdFromInfo(nodeinfo, trans):
+	n = Node.select(Node.q.identity == nodeinfo['identity'],connection=trans )
 	if list(n):
 		return list(n)[0].id
 	else:
 		raise Exception('No such node!')
 	
-def insert(nodeinfo1, nodeinfo2, backoff1={}, backoff2={}):
+def insert(nodeinfo1, nodeinfo2, backoff1={}, backoff2={},trans=con):
 
         #NodePair.createTable( ifNotExists=True)
-	node1 = getIdFromInfo(nodeinfo1)
-	node2 = getIdFromInfo(nodeinfo2)
+	node1 = getIdFromInfo(nodeinfo1,trans)
+	node2 = getIdFromInfo(nodeinfo2,trans)
                         #sorting
         if node1 > node2:
 		temp=node2
@@ -104,7 +111,7 @@ def insert(nodeinfo1, nodeinfo2, backoff1={}, backoff2={}):
 		backoff1=btemp
 
 
-	bla = NodePair( node1=node1, node2=node2 )
+	bla = NodePair( node1=node1, node2=node2,connection=trans )
 	if backoff1:
 		bla.backoffmax_node1 = backoff1['backoffmax']
 		bla.backoffcur_node1 = backoff1['backoffcur']

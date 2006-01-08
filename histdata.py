@@ -2,13 +2,13 @@ import db
 import handler
 #returns the list of the form 
 #[({'identity':'dasdas','location':'0.31231'},{:,:}),...]
-def get():
+def get(trans):
 	data=[]
-	connections = list(db.NodePair.select())
+	connections = list(db.NodePair.select(connection=trans))
 
 
-	nodes = list(handler.get_activenodes())
-	lastgoodver = db.getLastGoodVer()
+	nodes = list(handler.get_activenodes(trans))
+	lastgoodver = db.getLastGoodVer(trans)
 
 	goodnodes=[]
 	for node in nodes:
