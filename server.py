@@ -7,6 +7,7 @@ import time
 PORT=23415
 NRCONS=100
 DELAY=10
+MAXRUNNING=10
 
 
 
@@ -14,6 +15,7 @@ class Base(threading.Thread):
 	vlock = threading.Lock()
 	chunks=[]
 	id=0
+	running=0
 
 class Handler(Base):
 	
@@ -49,6 +51,10 @@ class serv(Base):
 		Base.chunks.append(self.chunk)
 		Base.vlock.release()	
 		print "%s\n________\n" % self.chunk
+		Base.vlock.acquire()
+		assert Base.running > 0
+		Base.running -= 1
+		Base.vlock.release
 
 
 lstn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -58,10 +64,17 @@ h = Handler()
 h.start()
 
 while 1:
-	(clnt,ap) = lstn.accept()
-	s = serv(clnt)
-	s.start()	
-
-
+	Base.vlock.acquire()
+	running = Base.running
+	Base.vlock.release()
+	if running < MAXRUNNING:
+		(clnt,ap) = lstn.accept()
+		s = serv(clnt)
+		s.start()	
+		Base.vlock.acquire()
+		Base.running += 1
+		Base.vlock.release()
+	else:
+		time.sleep(1)
 
 
