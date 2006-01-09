@@ -6,8 +6,8 @@ import time
 
 PORT=23415
 NRCONS=100
-DELAY=2
-MAXCONNS=2
+DELAY=1
+MAXCONNS=10
 
 
 class Base(threading.Thread):
