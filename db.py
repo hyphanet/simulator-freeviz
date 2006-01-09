@@ -21,7 +21,7 @@ class NodePair(SQLObject):
 	backoffmax_node2 = StringCol(length=50, default='5000')
 	backoffcur_node1 = StringCol(length=50, default='0')
 	backoffcur_node2 = StringCol(length=50, default='0')
-	nodes = RelatedJoin('Node')
+#	nodes = RelatedJoin('Node')
         index = DatabaseIndex('node1','node2', unique=True)
 
 class Node(SQLObject):
@@ -42,7 +42,7 @@ class Node(SQLObject):
 	address = StringCol(length=32,notNull=True,default='0.0.0.0:0')
 
 	active=StringCol(length=1,notNull=True,default='N')
-	edges = RelatedJoin('NodePair')
+#	edges = RelatedJoin('NodePair')
 	index = DatabaseIndex('identity',unique=True)
 	
 	
@@ -83,8 +83,8 @@ def delete_conns(nodeinfo, trans):
 	for edge in edges:
 		node1=edge.node1
 		node2=edge.node2
-		node1.removeNodePair(edge)
-		node2.removeNodePair(edge)
+		#node1.removeNodePair(edge)
+		#node2.removeNodePair(edge)
 		edge.delete(edge.id)
 
 def exists(nodeinfo,trans):
@@ -135,8 +135,8 @@ def insert(trans,nodeinfo1, nodeinfo2, backoff1={}, backoff2={}):
 
 
 	bla = NodePair( node1=node1, node2=node2,connection=trans )
-	Node.get(node1, connection=trans).addNodePair(bla)
-	Node.get(node2, connection=trans).addNodePair(bla)
+	#Node.get(node1, connection=trans).addNodePair(bla)
+	#Node.get(node2, connection=trans).addNodePair(bla)
 	if backoff1:
 		bla.backoffmax_node1 = backoff1['backoffmax']
 		bla.backoffcur_node1 = backoff1['backoffcur']

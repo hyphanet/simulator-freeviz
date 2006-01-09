@@ -24,12 +24,13 @@ class Generator(object):
 	#COLORS
 	nodeOK='#9dfbb9'
 	nodeOUTDATED='#c5ffff'
-	nodeLCONNS='#f9ffcb'
+#	nodeLCONNS='#f9ffcb'
+#	nodeLCONNS=nodeOK
 
 	edgeOK='#238500'
 	edgeBLOCKED='#ee4a1e'
 	defaultSize='3px'
-	minEdges=3
+#	minEdges=3
 	
 	#saves previous state of nodes
 	oldnstate={}
@@ -114,8 +115,8 @@ class Generator(object):
 			nversion = self.regver.match(node.version).group(1)
 			if node.lastGoodVersion < lastgoodver:
 				nodecolor=self.nodeOUTDATED
-			elif db.number_edges(node) < self.minEdges:
-				nodecolor=self.nodeLCONNS
+		#	elif db.number_edges(node) < self.minEdges:
+		#		nodecolor=self.nodeLCONNS
 	
 			if node.requests != '0' or node.inserts != '0' or node.transferring_requests != '0':
 				transinfosize="10px"
