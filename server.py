@@ -6,16 +6,15 @@ import time
 
 PORT=23415
 NRCONS=100
-DELAY=10
-MAXRUNNING=10
-
+DELAY=2
+MAXCONNS=2
 
 
 class Base(threading.Thread):
 	vlock = threading.Lock()
 	chunks=[]
 	id=0
-	running=0
+	conns = 0 
 
 class Handler(Base):
 	
@@ -49,12 +48,9 @@ class serv(Base):
 		self.clnsock.close()
 		Base.vlock.acquire()
 		Base.chunks.append(self.chunk)
+		Base.conns -= 1
 		Base.vlock.release()	
 		print "%s\n________\n" % self.chunk
-		Base.vlock.acquire()
-		assert Base.running > 0
-		Base.running -= 1
-		Base.vlock.release
 
 
 lstn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -62,19 +58,20 @@ lstn.bind(('',PORT))
 lstn.listen(100)
 h = Handler()
 h.start()
-
+conns=0
 while 1:
-	Base.vlock.acquire()
-	running = Base.running
-	Base.vlock.release()
-	if running < MAXRUNNING:
+	threading.Lock().acquire()
+	conns = Base.conns
+	threading.Lock().release
+	print "conns running %d" % conns
+
+	if conns < MAXCONNS:
 		(clnt,ap) = lstn.accept()
 		s = serv(clnt)
+		threading.Lock().acquire()
+		Base.conns += 1
+		threading.Lock().release
 		s.start()	
-		Base.vlock.acquire()
-		Base.running += 1
-		Base.vlock.release()
 	else:
+		print "DELAY!"
 		time.sleep(1)
-
-
