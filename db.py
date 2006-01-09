@@ -76,16 +76,11 @@ def getLastGoodVer(trans):
 
 
 def delete_conns(nodeinfo, trans):
-	nodeid = getIdFromInfo(nodeinfo,trans)
-	node = Node.get(nodeid, connection=trans)
-	edges = node.edges	
-
-	for edge in edges:
-		node1=edge.node1
-		node2=edge.node2
-		#node1.removeNodePair(edge)
-		#node2.removeNodePair(edge)
-		edge.delete(edge.id)
+        nodeid = getIdFromInfo(nodeinfo,trans)
+        l = NodePair.select(connection=trans)
+        for i in l:
+                if i.node1.id == nodeid or i.node2.id == nodeid:
+                        i.delete(i.id)
 
 def exists(nodeinfo,trans):
 	result = Node.select(Node.q.identity == nodeinfo['identity'],connection=trans)
