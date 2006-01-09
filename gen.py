@@ -158,7 +158,7 @@ class Generator(object):
 	
 			if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 				edgecolor= self.edgeBLOCKED
-			print "adding %s-%s" % (node_pair.node1.name,node_pair.node2.name)
+			#print "adding %s-%s" % (node_pair.node1.name,node_pair.node2.name)
 			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor, 
 							label='d: %0.3f' % distance, fontsize='9.5',arrowhead='none')
 			#node1 is tail, node2 is head
@@ -183,7 +183,7 @@ class Generator(object):
 			for identity in nstate.keys():
 				if identity in self.oldnstate:
 					if self.oldnstate[identity] != nstate[identity]:
-						print('\nlocation swap detected!!!!!!!!!!!!!!!!!!!!!!\n')
+						print('\nLOCATION SWAP  detected!!!!!!!!!!!!!!!!!!!!!!\n')
 						self.find_and_addswapedge(g, nodes, identity, nstate) 
 		else:
 			print "oldnstate empty!"

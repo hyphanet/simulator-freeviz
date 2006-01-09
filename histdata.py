@@ -17,8 +17,11 @@ def get(trans):
 		else:
 			print("%s is bad!" % node.name)
 
-	print "good nodes are:"
-	print goodnodes
+	#print "good nodes are:"
+	#print goodnodes
+	if not goodnodes:
+		print "NO GOOD NODES!!!"
+
 	for conn in connections:
 		if conn.node1.id in goodnodes and conn.node2.id in goodnodes:
 
