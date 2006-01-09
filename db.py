@@ -5,7 +5,7 @@ import datetime
 #mport pydot
 
 
-uri = 'postgres://tiwsted:severe@127.0.0.1/twisted?debug=True'
+uri = 'postgres://tiwsted:severe@127.0.0.1/twisted'
 #con = connectionForURI(uri)
 
 #sqlhub.processConnection = con

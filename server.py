@@ -25,6 +25,7 @@ class Handler(Base):
 			Base.vlock.acquire()
 			for chunk in Base.chunks:
 				handler.handle(chunk,trans)
+			print "COMMITED"
 			Base.chunks=[]
 			Base.vlock.release()
 			time.sleep(DELAY)			
