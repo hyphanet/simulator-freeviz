@@ -103,10 +103,10 @@ class Generator(object):
 		lastgoodver = db.getLastGoodVer(trans)
 	
 		#counts edges for a node	
-		edge_count={}
+		#edge_count={}
 	
 		for node in nodes:
-	
+			#edge_count[node.name]=0
 			nodecolor=self.nodeOK
 			transinfosize=self.defaultSize
 	
@@ -114,6 +114,8 @@ class Generator(object):
 			nversion = self.regver.match(node.version).group(1)
 			if node.lastGoodVersion < lastgoodver:
 				nodecolor=self.nodeOUTDATED
+			elif db.number_edges(node) < self.minEdges:
+				nodecolor=self.nodeLCONNS
 	
 			if node.requests != '0' or node.inserts != '0' or node.transferring_requests != '0':
 				transinfosize="10px"
@@ -134,7 +136,6 @@ class Generator(object):
 		node.location[0:7], transinfosize, node.requests, 
 		node.inserts, node.transferring_requests,nversion))
 
-			edge_count[gnode.name]=0
 			g.add_node(gnode)
 		
 
@@ -143,6 +144,12 @@ class Generator(object):
 
 		#there are no dublicate edges in the database 
 		for node_pair in node_pairs:
+			#assert node_pair.node1.name in edge_count
+			#edge_count[node_pair.node1.name]+=1
+
+			#assert node_pair.node2.name in edge_count
+			#edge_count[node_pair.node2.name]+=1
+
 			edgecolor = self.edgeOK
 	
 			node1loc = float(node_pair.node1.location)
@@ -151,6 +158,7 @@ class Generator(object):
 	
 			if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 				edgecolor= self.edgeBLOCKED
+			print "adding %s-%s" % (node_pair.node1.name,node_pair.node2.name)
 			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor, 
 							label='d: %0.3f' % distance, fontsize='9.5',arrowhead='none')
 			#node1 is tail, node2 is head
@@ -162,15 +170,13 @@ class Generator(object):
 					gedge.headlabel='%s (%s)' % (node_pair.backoffmax_node2, node_pair.backoffcur_node2 ) 
 					gedge.arrowhead='tee'
 	
-			edge_count[gedge.get_source()]+=1
-			edge_count[gedge.get_destination()]+=1
 			g.add_edge(gedge)
 	
 
-		for node_name in edge_count.keys():
-			if edge_count[node_name] < self.minEdges:
-				if g.get_node(node_name).color != self.nodeOUTDATED:
-					g.get_node(node_name).color=self.nodeLCONNS
+#		for node_name in edge_count.keys():
+#			if edge_count[node_name] < self.minEdges:
+#				if g.get_node(node_name).color != self.nodeOUTDATED:
+#					g.get_node(node_name).color=self.nodeLCONNS
 
 			
 		if self.oldnstate:
@@ -206,15 +212,14 @@ else:
 	delay=60
 
 print "delay is %d" % delay
-
+con = db.get_con()
+trans = con.transaction()
 while(True):
 	generator = Generator(oldnstate)
 	#STARING TRANS
-	trans=db.get_trans()
 	generator.gentopology(trans)
 	histogram.gen(trans)
 	#COMMITING TRANS
 	trans.commit()
-	del trans
 	oldnstate = generator.oldnstate
 	sleep(delay)

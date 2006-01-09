@@ -3,16 +3,8 @@ import parser
 import time
 
 timedelta=360
-
-def handle(data):
+def handle(data,trans):
 	(nodeinfo, nodeinfos, backoffs)=parser.parse(data)
-
-
-
-
-	#STRARTING TRANSACTION
-	trans = db.get_trans()
-
 
 	#deleting first
 	if 'identity' in nodeinfo:
@@ -32,12 +24,11 @@ def handle(data):
 				else:
 					backoff2= {}
 
-				db.insert(nodeinfo,nodeinfo2, backoff1=backoff1, backoff2=backoff2,trans=trans)
+				db.insert(trans, nodeinfo,nodeinfo2, backoff1=backoff1, backoff2=backoff2)
 	check_nodes(trans)
 	
 	#FINISHING TRANSACTION
 	trans.commit()
-	del trans
 
 #check if the node is up to date, if not remove it from node-pairs
 def check_nodes(trans):
@@ -47,7 +38,9 @@ def check_nodes(trans):
 		if inactive(node):
 			nodeinfo = getInfoFromNode(node)
 			db.delete_conns(nodeinfo,trans)
-
+			node.active='N'
+		else:
+			node.active='Y'
 
 def inactive(node):
 	nodetime = node.lastUpdate
@@ -55,13 +48,7 @@ def inactive(node):
 
 
 def get_activenodes(trans):
-	nodes = list(db.Node.select(connection=trans))
-	assert nodes
-	active_nodes=[]
-
-	for node in nodes:
-		if not inactive(node):
-			active_nodes.append(node)
+	active_nodes = list(db.Node.select( db.Node.q.active == 'Y', connection=trans))
 
 	return active_nodes
 
