@@ -6,8 +6,8 @@ import time
 
 PORT=23415
 NRCONS=100
-DELAY=1
-MAXCONNS=10
+DELAY=10
+MAXCONNS=300
 
 
 class Base(threading.Thread):
@@ -24,10 +24,12 @@ class Handler(Base):
 		trans = con.transaction()
 		while 1:
 			Base.vlock.acquire()
+			print "Hanlding harvested data"
 			for chunk in Base.chunks:
 				handler.handle(chunk,trans)
 			if Base.chunks: print "COMMITED"
 			Base.chunks=[]
+			print "Done"
 			Base.vlock.release()
 			time.sleep(DELAY)			
 
@@ -45,6 +47,7 @@ class serv(Base):
 			k = self.clnsock.recv(1024)
 			if k == '': break
 			self.chunk+=k
+		self.clnsock.shutdown(socket.SHUT_RDWR)
 		self.clnsock.close()
 		Base.vlock.acquire()
 		Base.chunks.append(self.chunk)

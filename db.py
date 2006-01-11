@@ -5,7 +5,7 @@ import datetime
 #mport pydot
 
 
-uri = 'postgres://tiwsted:severe@127.0.0.1/twisted?cache=False'
+uri = 'mysql://twisted:severe@127.0.0.1/twisted?cache=False'
 #con = connectionForURI(uri)
 
 #sqlhub.processConnection = con
@@ -71,6 +71,9 @@ def get_con():
 	
 	return hub.getConnection()
 
+def close_con(con):
+	#dbconnection.DBAPI.releaseConnection(con, explicit=True)
+	del hub.threadConnection
 def getLastGoodVer(trans):
 	return trans.queryOne('SELECT MAX(last_good_version) from node')[0]
 

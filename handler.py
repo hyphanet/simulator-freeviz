@@ -3,6 +3,7 @@ import parser
 import time
 
 timedelta=360
+
 def handle(data,trans):
 	(nodeinfo, nodeinfos, backoffs)=parser.parse(data)
 

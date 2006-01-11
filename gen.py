@@ -24,11 +24,12 @@ class Generator(object):
 	#COLORS
 	nodeOK='#9dfbb9'
 	nodeOUTDATED='#c5ffff'
-#	nodeLCONNS='#f9ffcb'
+	#nodeOUTDATED='#f9ffcb'
 #	nodeLCONNS=nodeOK
 
 	edgeOK='#238500'
 	edgeBLOCKED='#ee4a1e'
+	edgeCRITICAL='#c08000'
 	defaultSize='3px'
 #	minEdges=3
 	
@@ -76,7 +77,10 @@ class Generator(object):
 			return
 	
 		oldidentity = oldidentities[0]
-		print "showing edge between %s and %s" % ( nstate[identity][1], nstate[oldidentity][1])
+		#print "showing edge between %s and %s" % ( nstate[identity][1], nstate[oldidentity][1])
+		#emergency
+		if not(identity in nstate and oldidentity in nstate):
+			return
 		gedge=pydot.Edge(nstate[identity][1], nstate[oldidentity][1], label='swap', 
 					taillabel='%s' % nstate[identity][0],
 					headlabel='%s' %nstate[oldidentity][0], arrowtail='vee', arrowhead='vee'  )
@@ -159,6 +163,8 @@ class Generator(object):
 	
 			if node_pair.backoffcur_node1 != '0' or node_pair.backoffcur_node2 != '0':
 				edgecolor= self.edgeBLOCKED
+			elif node_pair.backoffmax_node1 != '5000' or node_pair.backoffmax_node2 != '5000':
+				edgecolor= self.edgeCRITICAL
 			#print "adding %s-%s" % (node_pair.node1.name,node_pair.node2.name)
 			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor, 
 							label='d: %0.3f' % distance, fontsize='9.5',arrowhead='none')
@@ -170,6 +176,12 @@ class Generator(object):
 				if node_pair.backoffcur_node2 != '0':
 					gedge.headlabel='%s (%s)' % (node_pair.backoffmax_node2, node_pair.backoffcur_node2 ) 
 					gedge.arrowhead='tee'
+			elif edgecolor == self.edgeCRITICAL:
+				if node_pair.backoffmax_node1 != '5000':
+					gedge.taillabel='%s' % (node_pair.backoffmax_node1)
+				if node_pair.backoffmax_node2 != '5000':
+					gedge.headlabel='%s' % (node_pair.backoffmax_node2)
+
 	
 			g.add_edge(gedge)
 	
@@ -213,9 +225,9 @@ else:
 	delay=60
 
 print "delay is %d" % delay
-con = db.get_con()
-trans = con.transaction()
 while(True):
+	con = db.get_con()
+	trans = con.transaction()
 	generator = Generator(oldnstate)
 	#STARING TRANS
 	generator.gentopology(trans)
@@ -223,4 +235,6 @@ while(True):
 	#COMMITING TRANS
 	trans.commit()
 	oldnstate = generator.oldnstate
+	trans.close()
+	db.close_con(con)
 	sleep(delay)
