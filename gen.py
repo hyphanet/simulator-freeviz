@@ -9,6 +9,7 @@ import handler
 import math
 from time import sleep
 import histogram
+import ciclegraph
 
 import db
 from datetime import *
@@ -232,6 +233,7 @@ while(True):
 	#STARING TRANS
 	generator.gentopology(trans)
 	histogram.gen(trans)
+	ciclegraph.gen(trans)
 	#COMMITING TRANS
 	trans.commit()
 	oldnstate = generator.oldnstate
