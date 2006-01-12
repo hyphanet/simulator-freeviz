@@ -62,4 +62,11 @@ def gen(con):
 				dnpair[1].x + im.size[0]/2,dnpair[1].y + im.size[1]/2),fill='green')
 			
 
+	da.text((r + im.size[0]/2 + 12,im.size[1]/2 ),'0', fill='black')
+	da.text((im.size[0]/2 ,r+10+im.size[1]/2 ),'0.25', fill='black')
+	da.text((-r + im.size[0]/2 - 10,im.size[1]/2 ),'0.5', fill='black')
+	da.text((im.size[0]/2 ,-r + im.size[1]/2 - 10),'0.75', fill='black')
+
+
+
 	im.save('/tmp/outputc.png','PNG')
