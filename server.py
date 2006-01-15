@@ -6,7 +6,7 @@ import time
 
 PORT=23415
 NRCONS=100
-DELAY=10
+HANDLER_DELAY=10
 MAXCONNS=300
 
 
@@ -35,7 +35,7 @@ class Handler(Base):
 			Base.chunks=[]
 			print "Done"
 			Base.vlock.release()
-			time.sleep(DELAY)			
+			time.sleep(HANDLER_DELAY)			
 
 class serv(Base):
 	chunk=''
@@ -62,7 +62,7 @@ class serv(Base):
 
 lstn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 lstn.bind(('',PORT))
-lstn.listen(100)
+lstn.listen(MAXCONNS)
 h = Handler()
 h.start()
 conns=0
@@ -81,4 +81,4 @@ while 1:
 		s.start()	
 	else:
 		print "DELAY!"
-		time.sleep(1)
+		time.sleep(HANDLER_DELAY)
