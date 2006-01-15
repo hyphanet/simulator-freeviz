@@ -105,7 +105,7 @@ class Generator(object):
 		if not nstate:
 			print "got empty nstate list"
 
-		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s, Time: %s' % (nnum, enum, datetime.now())  )
+		g=pydot.Dot(type='digraph', labelloc='tl', label='Nodes: %s, Edges: %s, Time: %s' % (nnum, enum, datetime.now()) , overlap='scale' , splines='true', mindist='1.0')
 		lastgoodver = db.getLastGoodVer(trans)
 	
 		#counts edges for a node	
@@ -167,8 +167,9 @@ class Generator(object):
 			elif node_pair.backoffmax_node1 != '5000' or node_pair.backoffmax_node2 != '5000':
 				edgecolor= self.edgeCRITICAL
 			#print "adding %s-%s" % (node_pair.node1.name,node_pair.node2.name)
-			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor , fontcolor=edgecolor, 
-							label='d: %0.3f' % distance, fontsize='9.5',arrowhead='none')
+			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor,
+				fontcolor=edgecolor,	label='d: %0.3f' % distance, fontsize='9.5',arrowhead='none')
+						
 			#node1 is tail, node2 is head
 			if edgecolor == self.edgeBLOCKED:
 				if node_pair.backoffcur_node1 != '0':
@@ -202,8 +203,9 @@ class Generator(object):
 		else:
 			print "oldnstate empty!"
 	
-		g.write_png('/tmp/output.png',prog='dot')
-
+		g.write_png('/tmp/output.png',prog='circo')
+		g.size="10,10"
+		g.write_png('/tmp/output_small.png',prog='circo')
 	
 		self.oldnstate = nstate
 	#	g.write_dot('bla.dot')

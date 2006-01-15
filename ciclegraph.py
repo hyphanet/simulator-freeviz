@@ -23,7 +23,7 @@ def idsin(idslist,dnodes):
 	return []	
 
 def gen(con):
-	nodes = handler.get_activenodes(con)
+	nodes = handler.get_lastgoodnodes(con)
 	node_pairs = list(db.NodePair.select())
 	im = Image.new('P',(600,600))
 	da = ImageDraw.Draw(im)
@@ -40,7 +40,7 @@ def gen(con):
 	r = im.size[0]/2 - 20
 	u = 10
 
-	da.chord((20, 20, im.size[0] -20, im.size[1] - 20), 0, 360, outline='black')
+	da.chord((20, 20, im.size[0] -20, im.size[1] - 20), 0, 360, outline='#C1D72B')
 
 #for i in nodes:
 

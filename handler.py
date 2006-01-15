@@ -53,6 +53,17 @@ def get_activenodes(trans):
 
 	return active_nodes
 
+def get_lastgoodnodes(trans):
+	anodes = get_activenodes(trans)
+	lastGoodVer = db.getLastGoodVer(trans)
+	lgnodes = []
+
+	for anode in anodes:
+		if anode.version >= lastGoodVer:
+			lgnodes.append(anode)
+
+	return lgnodes
+
 #time in seconds since epoch
 def curtime():
 	return time.time()

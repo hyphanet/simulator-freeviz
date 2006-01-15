@@ -25,9 +25,13 @@ class Handler(Base):
 		while 1:
 			Base.vlock.acquire()
 			print "Hanlding harvested data"
-			for chunk in Base.chunks:
-				handler.handle(chunk,trans)
-			if Base.chunks: print "COMMITED"
+			try:
+				for chunk in Base.chunks:
+	
+					handler.handle(chunk,trans)
+				if Base.chunks: print "COMMITED"
+			except Exception:
+				Base.vlock.release()
 			Base.chunks=[]
 			print "Done"
 			Base.vlock.release()
