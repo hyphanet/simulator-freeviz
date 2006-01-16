@@ -28,8 +28,6 @@ def handle(data,trans):
 				db.insert(trans, nodeinfo,nodeinfo2, backoff1=backoff1, backoff2=backoff2)
 	check_nodes(trans)
 	
-	#FINISHING TRANSACTION
-	trans.commit()
 
 #check if the node is up to date, if not remove it from node-pairs
 def check_nodes(trans):

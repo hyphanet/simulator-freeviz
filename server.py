@@ -24,13 +24,22 @@ class Handler(Base):
 		trans = con.transaction()
 		while 1:
 			Base.vlock.acquire()
-			print "Hanlding harvested data"
 			self.chunks = Base.chunks
 			Base.chunks = []
 			Base.vlock.release()
+			print "Hanlding harvested data(%d)" % len(self.chunks)
 			for chunk in self.chunks:
-				handler.handle(chunk,trans)
-			if self.chunks: print "COMMITED"
+				try:
+					handler.handle(chunk,trans)
+				except Exception:
+					print "ERROR IN %s" % chunk
+
+			if self.chunks: 
+				trans.commit()
+				print "COMMITED (%d)" % len(self.chunks)
+			else:
+				print "NOTHING"
+
 			self.chunks=[]
 			time.sleep(HANDLER_DELAY)			
 
@@ -54,7 +63,8 @@ class serv(Base):
 		Base.chunks.append(self.chunk)
 		Base.conns -= 1
 		Base.vlock.release()	
-		print "%s\n________\n" % self.chunk
+		#print "%s\n________\n" % self.chunk
+
 
 
 lstn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
