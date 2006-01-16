@@ -17,7 +17,7 @@ class Base(threading.Thread):
 	conns = 0 
 
 class Handler(Base):
-	
+	chunks = []	
 
 	def run(self):
 		con = db.get_con()		
@@ -25,16 +25,13 @@ class Handler(Base):
 		while 1:
 			Base.vlock.acquire()
 			print "Hanlding harvested data"
-			try:
-				for chunk in Base.chunks:
-	
-					handler.handle(chunk,trans)
-				if Base.chunks: print "COMMITED"
-			except Exception:
-				Base.vlock.release()
-			Base.chunks=[]
-			print "Done"
+			self.chunks = Base.chunks
+			Base.chunks = []
 			Base.vlock.release()
+			for chunk in self.chunks:
+				handler.handle(chunk,trans)
+			if self.chunks: print "COMMITED"
+			self.chunks=[]
 			time.sleep(HANDLER_DELAY)			
 
 class serv(Base):
