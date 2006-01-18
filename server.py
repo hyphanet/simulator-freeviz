@@ -53,10 +53,17 @@ class serv(Base):
 
 
 	def run(self):
+		self.clnsock.settimeout(60.0)
 		while 1:
-			k = self.clnsock.recv(1024)
-			if k == '': break
-			self.chunk+=k
+			try:
+				k = self.clnsock.recv(1024)
+				if k == '': break
+				self.chunk+=k
+			except:
+				Base.vlock.acquire()
+				Base.conns -=1
+				Base.vlock.release()
+				return
 		self.clnsock.shutdown(socket.SHUT_RDWR)
 		self.clnsock.close()
 		Base.vlock.acquire()
