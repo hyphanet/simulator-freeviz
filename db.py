@@ -5,7 +5,7 @@ import datetime
 #mport pydot
 
 
-uri = 'mysql://twisted:severe@127.0.0.1/twisted?cache=False'
+uri = 'mysql://freeviz:password@127.0.0.1/freenet_freeviz?cache=False'
 #con = connectionForURI(uri)
 
 #sqlhub.processConnection = con

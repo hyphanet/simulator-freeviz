@@ -1,3 +1,6 @@
+import sys
+sys.path+=['/home/freeviz//freeviz/SQLObject/']
+sys.path+=['/home/freeviz/freeviz/FormEncode/']
 import socket
 import threading
 import handler
@@ -64,7 +67,7 @@ class serv(Base):
 				Base.conns -=1
 				Base.vlock.release()
 				return
-		self.clnsock.shutdown(socket.SHUT_RDWR)
+#		self.clnsock.shutdown(socket.SHUT_RDWR)
 		self.clnsock.close()
 		Base.vlock.acquire()
 		Base.chunks.append(self.chunk)

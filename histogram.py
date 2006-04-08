@@ -5,7 +5,7 @@ precision=10
 import gdchart
 from math import floor
 import sys
-sys.path+=['/home/sleon/public_html/bla/']
+sys.path+=['/home/freeviz/freeviz/']
 
 import histdata
 	
@@ -53,6 +53,6 @@ def gen(trans):
 		column_name = str(chunk * i)
 		label.append(column_name)
 	x.setLabels(label)
-	x.draw("/tmp/histogram.png")
+	x.draw("/home/freeviz/public_html/histogram.png")
 	#print histogram
 	#print histogram_percents

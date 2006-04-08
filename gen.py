@@ -3,7 +3,9 @@
 import sys,os
 import pydot
 import sys
-sys.path+=['/home/sleon/freeviz/']
+sys.path+=['/home/freeviz/freeviz']
+sys.path+=['/home/freeviz/freeviz/SQLObject/']
+sys.path+=['/home/freeviz/freeviz/FormEncode/']
 import re
 import handler
 import math
@@ -31,7 +33,7 @@ class Generator(object):
 	edgeOK='#238500'
 	edgeBLOCKED='#ee4a1e'
 	edgeCRITICAL='#c08000'
-	defaultSize='3px'
+	defaultSize='10'
 #	minEdges=3
 	
 	#saves previous state of nodes
@@ -124,7 +126,7 @@ class Generator(object):
 		#		nodecolor=self.nodeLCONNS
 	
 			if node.requests != '0' or node.inserts != '0' or node.transferring_requests != '0':
-				transinfosize="10px"
+				transinfosize="22"
 	
 			gnode = pydot.Node(node.name, style='filled', color=nodecolor , label='''\
 <
@@ -135,7 +137,7 @@ class Generator(object):
 	</tr>
 	<tr><td align="left"><FONT point-size="%s">%s</FONT></td></tr>
 	<tr><td align="left"><FONT point-size="%s">R:%s I:%s TR:%s</FONT></td></tr>
-	<tr><td align="left"><FONT point-size="5px">Ver. %s</FONT></td></tr>
+	<tr><td align="left"><FONT point-size="10">Ver. %s</FONT></td></tr>
 	
 	</table>
 	>''' % (transinfosize, node.name,transinfosize, 
@@ -168,7 +170,7 @@ class Generator(object):
 				edgecolor= self.edgeCRITICAL
 			#print "adding %s-%s" % (node_pair.node1.name,node_pair.node2.name)
 			gedge = pydot.Edge(node_pair.node1.name , node_pair.node2.name, color=edgecolor,
-				fontcolor=edgecolor,	label='d: %0.3f' % distance, fontsize='9.5',arrowhead='none')
+				fontcolor=edgecolor,	label='d: %0.3f' % distance, fontsize='16',arrowhead='none')
 						
 			#node1 is tail, node2 is head
 			if edgecolor == self.edgeBLOCKED:
@@ -203,9 +205,15 @@ class Generator(object):
 		else:
 			print "oldnstate empty!"
 	
-		g.write_png('/tmp/output.png',prog='circo')
-		g.size="10,10"
-		g.write_png('/tmp/output_small.png',prog='circo')
+		print "writing big image..."
+		g.write_png('/home/freeviz/public_html/output.png',prog='circo')
+		print "done"
+		g.size="16,18"
+		g.ratio="fill"
+		g.fontsize="36"
+		print "writing small image"
+		g.write_png('/home/freeviz/public_html/output_small.png',prog='circo')
+		print "done"
 	
 		self.oldnstate = nstate
 	#	g.write_dot('bla.dot')
@@ -228,7 +236,7 @@ else:
 	delay=60
 
 print "delay is %d" % delay
-while(True):
+for i in range(10):
 	con = db.get_con()
 	trans = con.transaction()
 	generator = Generator(oldnstate)
@@ -241,4 +249,5 @@ while(True):
 	oldnstate = generator.oldnstate
 	trans.close()
 	db.close_con(con)
+	print "sleeping for %d seconds" % delay
 	sleep(delay)

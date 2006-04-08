@@ -69,4 +69,4 @@ def gen(con):
 
 
 
-	im.save('/tmp/outputc.png','PNG')
+	im.save('/home/freeviz/public_html/outputc.png','PNG')

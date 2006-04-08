@@ -1,12 +1,32 @@
 import db
 import parser
 import time
+import re
 
 timedelta=360
+mandatory_version = 599
+
 
 def handle(data,trans):
 	(nodeinfo, nodeinfos, backoffs)=parser.parse(data)
 
+
+	#checking the version
+	version_parser = re.compile('.*,(\d+)')
+	
+	if 'version' in nodeinfo:
+		version = version_parser.match(nodeinfo['version']).group(1)
+		#print "Node version is " + version
+		version = int(version)
+
+		#exit when non mandatory version
+		if version < mandatory_version:
+			print "Skipping following data, because node is too old"
+			print data
+			return
+
+		
+		
 	#deleting first
 	if 'identity' in nodeinfo:
 		db.refresh(nodeinfo,trans)

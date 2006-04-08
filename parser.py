@@ -60,8 +60,8 @@ DISCONNECTED 70.81.24.164:7744 rek 0.11219091833051797 Fred,0.7,1.0,305 backoff:
 """
 
 def parse(data):
-	optionsline = re.compile('(\S+)=(.+)')
-	connection = re.compile('^CONNECTED\s+(\d+\.\d+\.\d+\.\d+:\d+)\s+(.+)\s+(0\.\d+)\s+(Fred\S+)\sbackoff: (\d+) \((\d+)\)\|(\S+)')
+	optionsline = re.compile('(\S+)\s*=(.+)')
+	connection = re.compile('^CONNECTED\s+(\d+\.\d+\.\d+\.\d+:\d+|\S+:\d+)\s+(.+)\s+(0\.\d+)\s+(Fred\S+)\sbackoff: (\d+) \((\d+)\)\|(\S+)')
 
 	options={}
 	connections=[]
@@ -72,7 +72,7 @@ def parse(data):
 		con = connection.match(i)
 
 		if op:
-			options[op.group(1)]=op.group(2).strip() 
+			options[op.group(1).strip()]=op.group(2).strip() 
 		elif con:
 			di={'address': con.group(1), 'name': con.group(2), 'location' : con.group(3) , 
 				'version': con.group(4), 'identity':con.group(7) }
@@ -83,6 +83,9 @@ def parse(data):
 
 		
 	options['name']=options['myName']
+	if 'physical.udp' in options.keys():
+		options['address'] = options['physical.udp']
+
 	return (options, connections, backoffs)
 
 
